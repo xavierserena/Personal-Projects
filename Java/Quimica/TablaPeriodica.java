@@ -1,12 +1,14 @@
 import java.util.*;
 
 class TablaPeriodica {
-    private static Elemento[] elementos;
+    public static Elemento[] elementos;
     private static HashMap<String, Elemento> elementoNumero;
+    private static boolean learning;
 
     TablaPeriodica() {
         elementoNumero = new HashMap<>();
         elementos = readElements();
+        learning = true;
     }
 
     private Elemento[] readElements() {
@@ -25,6 +27,13 @@ class TablaPeriodica {
         return els;
     }
 
+    public Elemento getElement(int index) {
+        if (index < 0 || index > 117) {
+            return null;
+        }
+        return elementos[index];
+    }
+
     private static void print(String s) {
         System.out.println(s);
         System.out.println();
@@ -33,33 +42,40 @@ class TablaPeriodica {
     private static Elemento processSyntax(String input) {
         if (input == null) {
             print("Ingresa nombre, abreviación o número");
-        }
-        if (input.matches(".*\\d.*")) {
+        } else if (input.matches(".*\\d.*")) {
             Integer n = Integer.parseInt(input);
             if (n > elementos.length || n < 0) {
                 print("Ingresa un número apropiado");
                 return null;
             }
             return elementos[n - 1];
-        } else {
-            if (!elementoNumero.containsKey(input)) {
-                print("Ingresa una abreviación apropriada");
-                return null;
-            }
-            return elementoNumero.get(input);
+        } else if (input.equals("T")) {
+            learning = false;
+        } else if (!elementoNumero.containsKey(input)) {
+            print("Ingresa una abreviación apropriada");
+            return null;
         }
+        return elementoNumero.get(input);
     }
 
     public static void main(String[] args) {
         TablaPeriodica t = new TablaPeriodica();
+        Scanner in = new Scanner(System.in);
+        String input;
         while (true) {
-            Scanner in = new Scanner(System.in);
-            String input = in.next();
-            Elemento e = processSyntax(input);
-            if (e == null) {
-                continue;
+            if (learning) {
+                input = in.next();
+                Elemento e = processSyntax(input);
+                if (e == null) {
+                    continue;
+                }
+                e.imprimirElemento();
+            } else {
+                Prueba test = new Prueba(t);
+                test.test();
+                test.printScore();
+                learning = true;
             }
-            e.imprimirElemento();
         }
     }
 }
